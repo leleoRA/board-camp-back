@@ -10,7 +10,8 @@ const customerSchema = joi.object({
     .string()
     .pattern(/^[0-9]{11}$/)
     .required(),
-  birthday: joi.string().pattern(/^\d{4}[\/\-](0?[1-9]|1[012])[\/\-](0?[1-9]|[12][0-9]|3[01])$/),
+  birthday: joi
+    .string()
+    .isoDate(),
 });
-
 export default customerSchema;

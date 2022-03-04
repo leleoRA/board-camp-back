@@ -1,7 +1,18 @@
 import db from "../db.js";
 
 export async function getGames(req, res) {
+  const { name } = req.query;
+  //const insensitiveName = name.toLowerCase();
+
   try {
+    if (name) {
+      const resultName = await db.query(
+        `SELECT games.*, categories.name AS "categoryName" FROM games JOIN categories ON categories.id=games."categoryId" WHERE name LIKE '$1%'`,
+        [name]
+      );
+      return res.send(resultName.rows);
+    }
+
     const result = await db.query(`
             SELECT games.*, categories.name AS "categoryName" FROM games JOIN categories ON categories.id=games."categoryId"
         `);

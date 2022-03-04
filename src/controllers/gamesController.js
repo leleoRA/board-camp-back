@@ -7,8 +7,8 @@ export async function getGames(req, res) {
   try {
     if (name) {
       const resultName = await db.query(
-        `SELECT games.*, categories.name AS "categoryName" FROM games JOIN categories ON categories.id=games."categoryId" WHERE name LIKE '$1%'`,
-        [name]
+        `SELECT games.*, categories.name AS "categoryName" FROM games JOIN categories ON categories.id=games."categoryId" WHERE UPPER (games.name) LIKE UPPER($1)`,
+        [`${name}%`]
       );
       return res.send(resultName.rows);
     }
@@ -23,6 +23,7 @@ export async function getGames(req, res) {
 
     res.send(result.rows);
   } catch (error) {
+    console.log(typeof(name))
     res.status(500).send(error);
   }
 }

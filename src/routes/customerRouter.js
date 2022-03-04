@@ -8,11 +8,11 @@ import {
 import validateSchemaMiddleware from "../middlewares/validateSchemaMiddleware.js";
 import customerSchema from "../schemas/customerSchema.js";
 
-const customerRoute = Router();
+const customerRouter = Router();
 
-customerRoute.get("/customers", getCustomers);
-customerRoute.get("/customers/:id", getCustomer);
-customerRoute.post(
+customerRouter.get("/customers", getCustomers);
+customerRouter.get("/customers/:id", getCustomer);
+customerRouter.post(
   "/customers",
   validateSchemaMiddleware(customerSchema),
   createCustomer
@@ -23,4 +23,4 @@ customerRoute.put(
   updateCustomer
 );
 
-export default customerRoute;
+export default customerRouter;

@@ -1,6 +1,20 @@
 import db from "../db.js";
 
-export async function getGames(req, res) {}
+export async function getGames(req, res) {
+  try {
+    const result = await db.query(`
+            SELECT games.*, categories.name AS "categoryName" FROM games JOIN categories ON categories.id=games."categoryId"
+        `);
+
+    if (result.rowCount === 0) {
+      return res.status(404).send("Nenhum jogo encontrado.");
+    }
+
+    res.send(result.rows);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+}
 
 export async function createGame(req, res) {
   const { name, image, stockTotal, categoryId, pricePerDay } = req.body;

@@ -1,9 +1,19 @@
 import db from "../db.js";
 
 export async function getCustomers(req, res) {
-  const { cpf } = req.query;
+  const { cpf, limit, offset } = req.query;
 
   try {
+    let offsetValue = "";
+    if (offset) {
+      offsetValue = `OFFSET ${offset}`;
+    }
+
+    let limitValue = "";
+    if (limit) {
+      limitValue = `LIMIT ${limit}`;
+    }
+
     if (cpf) {
       const resultCpf = await db.query(
         `SELECT * FROM customers WHERE cpf LIKE $1`,
@@ -12,7 +22,9 @@ export async function getCustomers(req, res) {
       return res.send(resultCpf.rows);
     }
 
-    const customers = await db.query(`SELECT * FROM customers`);
+    const customers = await db.query(
+      `SELECT * FROM customers ${limitValue} ${offsetValue}`
+    );
 
     res.send(customers.rows);
   } catch (error) {

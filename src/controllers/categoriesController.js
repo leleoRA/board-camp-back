@@ -13,7 +13,9 @@ export async function getCaterogies(req, res) {
     if (limit) {
       limitValue = `LIMIT ${limit}`;
     }
+
     const result = await db.query(`SELECT * FROM categories ${limitValue} ${offsetValue}`);
+    
     res.send(result.rows);
   } catch (error) {
     res.status(500).send(error);

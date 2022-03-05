@@ -1,8 +1,19 @@
 import db from "../db.js";
 
 export async function getCaterogies(req, res) {
+  const { limit, offset } = req.query;
+
   try {
-    const result = await db.query(`SELECT * FROM categories ORDER BY name`);
+    let offsetValue = "";
+    if (offset) {
+      offsetValue = `OFFSET ${offset}`;
+    }
+
+    let limitValue = "";
+    if (limit) {
+      limitValue = `LIMIT ${limit}`;
+    }
+    const result = await db.query(`SELECT * FROM categories ${limitValue} ${offsetValue}`);
     res.send(result.rows);
   } catch (error) {
     res.status(500).send(error);

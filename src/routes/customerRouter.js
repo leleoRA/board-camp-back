@@ -17,7 +17,7 @@ customerRouter.post(
   validateSchemaMiddleware(customerSchema),
   createCustomer
 );
-customerRoute.put(
+customerRouter.put(
   "/customers/:id",
   validateSchemaMiddleware(customerSchema),
   updateCustomer

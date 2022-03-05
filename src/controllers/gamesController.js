@@ -1,20 +1,29 @@
 import db from "../db.js";
 
 export async function getGames(req, res) {
-  const { name } = req.query;
-  //const insensitiveName = name.toLowerCase();
+  const { name, offset, limit } = req.query;
 
   try {
+    let offsetValue = "";
+    if (offset) {
+      offsetValue = `OFFSET ${offset}`;
+    }
+
+    let limitValue = "";
+    if (limit) {
+      limitValue = `LIMIT ${limit}`;
+    }
+
     if (name) {
       const resultName = await db.query(
-        `SELECT games.*, categories.name AS "categoryName" FROM games JOIN categories ON categories.id=games."categoryId" WHERE UPPER (games.name) LIKE UPPER($1)`,
+        `SELECT games.*, categories.name AS "categoryName" FROM games JOIN categories ON categories.id=games."categoryId" WHERE UPPER (games.name) LIKE UPPER ($1) ${limitValue} ${offsetValue}`,
         [`${name}%`]
       );
       return res.send(resultName.rows);
     }
 
     const result = await db.query(`
-            SELECT games.*, categories.name AS "categoryName" FROM games JOIN categories ON categories.id=games."categoryId"
+            SELECT games.*, categories.name AS "categoryName" FROM games JOIN categories ON categories.id=games."categoryId" ${limitValue} ${offsetValue}
         `);
 
     if (result.rowCount === 0) {
@@ -23,7 +32,6 @@ export async function getGames(req, res) {
 
     res.send(result.rows);
   } catch (error) {
-    console.log(typeof(name))
     res.status(500).send(error);
   }
 }

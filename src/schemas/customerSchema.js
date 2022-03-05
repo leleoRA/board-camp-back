@@ -1,7 +1,7 @@
 import joi from "joi";
 
 const customerSchema = joi.object({
-  name: joi.string().required(),
+  name: joi.string().trim().required(),
   phone: joi
     .string()
     .pattern(/^[0-9]{10,11}$/)

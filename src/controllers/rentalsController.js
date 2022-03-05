@@ -98,4 +98,23 @@ export async function returnRental(req, res) {
   }
 }
 
-export async function deleteRental(req, res) {}
+export async function deleteRental(req, res) {
+  const { id } = req.params;
+
+  try {
+    const resultRental = await db.query(`SELECT * FROM rentals WHERE id = $1`, [
+      id,
+    ]);
+
+    if (resultRental.rowCount === 0) return res.sendStatus(404);
+
+    if (resultRental.rows[0].returnDate !== null)
+      return res.status(400).send("Locação já finalizada.");
+
+    await db.query(`DELETE FROM rentals WHERE id = $1`, [id]);
+
+    res.sendStatus(200);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+}

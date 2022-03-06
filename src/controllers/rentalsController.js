@@ -2,6 +2,22 @@ import db from "../db.js";
 import dayjs from "dayjs";
 
 export async function getRentals(req, res) {
+  const { customerId, gameId } = req.query;
+
+  let filterParams = "";
+
+  if (customerId && !gameId) {
+    filterParams = `WHERE customers.id=${customerId}`;
+  }
+
+  if (!customerId && gameId) {
+    filterParams = `WHERE games.id=${gameId}`;
+  }
+
+  if (customerId && gameId) {
+    filterParams = `WHERE games.id=${gameId} AND customers.id=${customerId}`;
+  }
+
   try {
     const result = await db.query(`
   SELECT 
@@ -16,8 +32,10 @@ export async function getRentals(req, res) {
     JOIN customers ON customers.id=rentals."customerId"
     JOIN games ON games.id=rentals."gameId"
     JOIN categories ON categories.id=games."categoryId"
-  
+    ${filterParams}
   `);
+
+    if (result.rowCount === 0) return res.sendStatus(404);
 
     res.send(
       result.rows.map((row) => {

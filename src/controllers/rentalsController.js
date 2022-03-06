@@ -2,7 +2,7 @@ import db from "../db.js";
 import dayjs from "dayjs";
 
 export async function getRentals(req, res) {
-  const { customerId, gameId } = req.query;
+  const { customerId, gameId, offset, limit, order, desc } = req.query;
 
   let filterParams = "";
 
@@ -16,6 +16,26 @@ export async function getRentals(req, res) {
 
   if (customerId && gameId) {
     filterParams = `WHERE games.id=${gameId} AND customers.id=${customerId}`;
+  }
+
+  let offsetValue = "";
+  if (offset) {
+    offsetValue = `OFFSET ${offset}`;
+  }
+
+  let limitValue = "";
+  if (limit) {
+    limitValue = `LIMIT ${limit}`;
+  }
+
+  let orderByValue = "";
+  if (order) {
+    orderByValue = `ORDER BY rentals."${order}"`;
+  }
+
+  let descCondition = "";
+  if (desc) {
+    descCondition = `DESC`;
   }
 
   try {
@@ -33,6 +53,10 @@ export async function getRentals(req, res) {
     JOIN games ON games.id=rentals."gameId"
     JOIN categories ON categories.id=games."categoryId"
     ${filterParams}
+    ${limitValue} 
+    ${offsetValue}
+    ${orderByValue} 
+    ${descCondition}
   `);
 
     if (result.rowCount === 0) return res.sendStatus(404);

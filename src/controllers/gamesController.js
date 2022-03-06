@@ -1,7 +1,7 @@
 import db from "../db.js";
 
 export async function getGames(req, res) {
-  const { name, offset, limit } = req.query;
+  const { name, offset, limit, order, desc } = req.query;
 
   try {
     let offsetValue = "";
@@ -14,16 +14,26 @@ export async function getGames(req, res) {
       limitValue = `LIMIT ${limit}`;
     }
 
+    let orderByValue = "";
+    if (order) {
+      orderByValue = `ORDER BY ${order}`;
+    }
+
+    let descCondition = "";
+    if (desc) {
+      descCondition = `DESC`;
+    }
+
     if (name) {
       const resultName = await db.query(
-        `SELECT games.*, categories.name AS "categoryName" FROM games JOIN categories ON categories.id=games."categoryId" WHERE UPPER (games.name) LIKE UPPER ($1) ${limitValue} ${offsetValue}`,
+        `SELECT games.*, categories.name AS "categoryName" FROM games JOIN categories ON categories.id=games."categoryId" WHERE UPPER (games.name) LIKE UPPER ($1) ${limitValue} ${offsetValue} ${orderByValue} ${descCondition}`,
         [`${name}%`]
       );
       return res.send(resultName.rows);
     }
 
     const result = await db.query(`
-            SELECT games.*, categories.name AS "categoryName" FROM games JOIN categories ON categories.id=games."categoryId" ${limitValue} ${offsetValue}
+            SELECT games.*, categories.name AS "categoryName" FROM games JOIN categories ON categories.id=games."categoryId" ${limitValue} ${offsetValue} ${orderByValue} ${descCondition}
         `);
 
     if (result.rowCount === 0) {

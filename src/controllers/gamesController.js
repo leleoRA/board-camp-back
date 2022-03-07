@@ -1,4 +1,5 @@
 import db from "../db.js";
+import SqlString from 'sqlstring';
 
 export async function getGames(req, res) {
   const { name, offset, limit, order, desc } = req.query;
@@ -6,17 +7,17 @@ export async function getGames(req, res) {
   try {
     let offsetValue = "";
     if (offset) {
-      offsetValue = `OFFSET ${offset}`;
+      offsetValue = `OFFSET ${SqlString.escape(offset)}`;
     }
 
     let limitValue = "";
     if (limit) {
-      limitValue = `LIMIT ${limit}`;
+      limitValue = `LIMIT ${SqlString.escape(limit)}`;
     }
 
     let orderByValue = "";
     if (order) {
-      orderByValue = `ORDER BY ${order}`;
+      orderByValue = `ORDER BY ${SqlString.escape(order)}`;
     }
 
     let descCondition = "";

@@ -1,5 +1,6 @@
 import db from "../db.js";
 import dayjs from "dayjs";
+import SqlString from 'sqlstring';
 
 export async function getRentals(req, res) {
   const { customerId, gameId, offset, limit, order, desc } = req.query;
@@ -7,7 +8,7 @@ export async function getRentals(req, res) {
   let filterParams = "";
 
   if (customerId && !gameId) {
-    filterParams = `WHERE customers.id=${customerId}`;
+    filterParams = `WHERE customers.id=${SqlString.escape(customerId)}`;
   }
 
   if (!customerId && gameId) {
@@ -15,22 +16,22 @@ export async function getRentals(req, res) {
   }
 
   if (customerId && gameId) {
-    filterParams = `WHERE games.id=${gameId} AND customers.id=${customerId}`;
+    filterParams = `WHERE games.id=${SqlString.escape(gameId)} AND customers.id=${SqlString.escape(customerId)}`;
   }
 
   let offsetValue = "";
   if (offset) {
-    offsetValue = `OFFSET ${offset}`;
+    offsetValue = `OFFSET ${SqlString.escape(offset)}`;
   }
 
   let limitValue = "";
   if (limit) {
-    limitValue = `LIMIT ${limit}`;
+    limitValue = `LIMIT ${SqlString.escape(limit)}`;
   }
 
   let orderByValue = "";
   if (order) {
-    orderByValue = `ORDER BY rentals."${order}"`;
+    orderByValue = `ORDER BY rentals."${SqlString.escape(order)}"`;
   }
 
   let descCondition = "";
